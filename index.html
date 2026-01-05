@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para vos 💖</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #15151f, #0b0b10);
+      color: #f5f5f7;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 16px;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* capa para efectos */
+    .fx-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* ❤️ corazones flotando (más cantidad) */
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .heart {
+      position: absolute;
+      font-size: 18px;
+      animation: floatUp linear infinite;
+      opacity: 0;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+      will-change: transform, opacity;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(12vh) scale(0.9); opacity: 0; }
+      10%  { opacity: 0.9; }
+      100% { transform: translateY(-120vh) scale(1.25); opacity: 0; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .letter {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      font-size: 15px;
+      margin: 0 0 16px;
+    }
+
+    .btn-wrap {
+      position: relative;
+      margin-top: 10px;
+      padding: 18px;
+      border-radius: 16px;
+      overflow: visible;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px 12px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      text-align: center;
+      background: #1DB954;
+      color: #0b0b10;
+      text-decoration: none;
+      max-width: 100%;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(29,185,84,0.55); }
+      70%  { box-shadow: 0 0 0 12px rgba(29,185,84,0); }
+      100% { box-shadow: 0 0 0 0 rgba(29,185,84,0); }
+    }
+
+    .arrow {
+      position: absolute;
+      font-size: 22px;
+      line-height: 1;
+      opacity: 0.95;
+      user-select: none;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+      animation: nudge 0.95s ease-in-out infinite;
+    }
+
+    .arrow.left   { left: -25px;  top: 50%; transform: translateY(-50%); }
+    .arrow.right  { right: -25px; top: 50%; transform: translateY(-50%); }
+    .arrow.top    { top: -25px;   left: 50%; transform: translateX(-50%); }
+    .arrow.bottom { bottom: -25px; left: 50%; transform: translateX(-50%); }
+
+    @keyframes nudge {
+      0%, 100% { transform: translate(var(--dx, 0), var(--dy, 0)); opacity: 0.55; }
+      50%      { transform: translate(var(--dx2, 0), var(--dy2, 0)); opacity: 1; }
+    }
+
+    .arrow.left   { --dx: 0px;  --dx2: 6px;  --dy: -50%; --dy2: -50%; }
+    .arrow.right  { --dx: 0px;  --dx2: -6px; --dy: -50%; --dy2: -50%; }
+    .arrow.top    { --dy: 0px;  --dy2: 6px;  --dx: -50%; --dx2: -50%; }
+    .arrow.bottom { --dy: 0px;  --dy2: -6px; --dx: -50%; --dx2: -50%; }
+
+    /* spotify embed */
+    .spotify {
+      margin-top: 14px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+    }
+    .spotify iframe {
+      display: block;
+      width: 100%;
+      height: 152px;
+      border: 0;
+    }
+
+    /* partículas al tocar */
+    .particle {
+      position: absolute;
+      left: 0; top: 0;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      opacity: 0;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+      animation: pop 900ms ease-out forwards;
+    }
+    @keyframes pop {
+      0%   { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+      10%  { opacity: 1; }
+      100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r)) scale(1.25); opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn, .arrow, .heart, .particle { animation: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="fx-layer" id="fx"></div>
+  <div class="hearts" id="hearts"></div>
+
+  <main class="card">
+    <h1>💌 Una cartita para vos</h1>
+
+    <p class="letter">Hola amorrrr, te hice esta cartita para hablarte un poco, ya tenes 18 y con eso también casi dos años de novios, la verdad que sos la mejor novia del mundo, me gustas tal y como sos, no cambiaria nada de vos. Bueno si, algo si, si tendría que cambiar algo seria haber hecho mas recuerdos o cosas juntos, decirte ir a lugares que no se si te iban a gustar o no estar seguro, haberte hablado mas, aunque me quieras silenciar. Me gustaría que esto se quede así tal y como ahora, poder quedarnos juntos para siempre. Como se que tal vez lo que digo te lo diga siempre, la verdad es que no tengo palabras para explicar todo lo que siento, por eso te hice una playlist con canciones que me hacen acordarme de vos o que te las queria dedicar, porque para mi el amor va mas allá de las palabras sino mas bien de las acciones que uno con la persona que le gusta. Se que mezclo el formal y el informal perdon, pero soy así. 
+
+Te amo ahora y siempre,
+	Nacho &lt;3 </p>
+
+    <div class="btn-wrap">
+      <span class="arrow top">👇</span>
+      <span class="arrow left">👉</span>
+      <span class="arrow right">👈</span>
+      <span class="arrow bottom">👆</span>
+
+      <a class="btn" href="https://open.spotify.com/playlist/0bSORWrePZGQCIYfXT3VPc?si=ktqn2VxDQh2n6spqR-2BAA" target="_blank" rel="noopener noreferrer">
+        clickeame 🎶
+      </a>
+    </div>
+  </main>
+
+<script>
+  const heartsLayer = document.getElementById('hearts');
+  const heartChars = ["❤️","💖","💕","💗","💘","💞"];
+
+  function spawnBackgroundHeart() {
+    const el = document.createElement('span');
+    el.className = 'heart';
+    el.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (14 + Math.random() * 16) + 'px';
+    el.style.animationDuration = (6 + Math.random() * 7) + 's';
+    el.style.animationDelay = (Math.random() * 2) + 's';
+    heartsLayer.appendChild(el);
+    setTimeout(() => el.remove(), 14000);
+  }
+  for (let i = 0; i < 18; i++) spawnBackgroundHeart();
+  setInterval(spawnBackgroundHeart, 700);
+
+  const fx = document.getElementById('fx');
+  const particles = ["💖","💕","💗","✨","💫","💘","❤️"];
+
+  function burst(x, y) {
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'particle';
+      p.textContent = particles[Math.floor(Math.random() * particles.length)];
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      const dx = (Math.random() * 140 - 70).toFixed(0) + 'px';
+      const dy = (Math.random() * 140 - 90).toFixed(0) + 'px';
+      const r  = (Math.random() * 220 - 110).toFixed(0) + 'deg';
+      p.style.setProperty('--x', dx);
+      p.style.setProperty('--y', dy);
+      p.style.setProperty('--r', r);
+      fx.appendChild(p);
+      setTimeout(() => p.remove(), 950);
+    }
+  }
+
+  function handlePointer(e) {
+    const x = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+    const y = (e.touches && e.touches[0]) ? e.touches[0].clientY : e.clientY;
+    burst(x, y);
+  }
+  window.addEventListener('click', handlePointer, { passive: true });
+  window.addEventListener('touchstart', handlePointer, { passive: true });
+</script>
+
+</body>
+</html>
